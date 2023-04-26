@@ -169,4 +169,4 @@ complaint_data <- all_data_5un[, columns]
 
 
 ### Save to Rdata
-save(complaint_data, lon_lat_data, file="./data/cleaned_data.RData")
+# save(complaint_data, lon_lat_data, file="./data/cleaned_data.RData")
