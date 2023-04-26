@@ -4,8 +4,6 @@
 # Load package
 library(dplyr)
 library(lubridate)
-library(ROCR)
-library(ggplot2)
 
 ### set the seed to 1234
 set.seed(1234)
@@ -61,16 +59,21 @@ length(which((all_data$occurrence_finish_time == "" &
                 all_data$occurrence_finish_date != "") | 
                (all_data$occurrence_finish_time != "" & 
                   all_data$occurrence_finish_date == ""))) # 6909
+length(which((all_data$occurrence_start_date == "" & 
+                all_data$occurrence_start_time != "") | 
+               (all_data$occurrence_start_date != "" & 
+                  all_data$occurrence_start_time == ""))) # 701
 
 ### Remove the NA of occurrence_start_date and occurrence_start_time
 ### Remove the rows only have occurrence_finish_time or occurrence_finish_date
 all_data <- all_data %>%
-  filter(occurrence_start_date != "", all_data$occurrence_start_time != "") %>%
+  filter(occurrence_start_date != "") %>%
+  filter(occurrence_start_time != "") %>%
   filter(!((occurrence_finish_time == "" & occurrence_finish_date != "") |
            (occurrence_finish_time != "" & occurrence_finish_date == "")))
 
 ### How many NA in the occurrence precinct
-length(which(is.na(tmp1$occurrence_precinct)))
+length(which(is.na(all_data$occurrence_precinct))) # 2164
 
 ### Remove the NA of occurrence_precinct
 all_data <- all_data %>%
@@ -94,12 +97,12 @@ all_data <- all_data %>%
   select(-occurrence_start_date, -occurrence_finish_date)
 
 ### official website shows data start from 2006
-table(all_data$occurrence_year)
+table(all_data$occurrence_year, useNA ="ifany")
 ### filter the year from 2006
 all_data <- all_data %>%
   filter(occurrence_year >= 2006)
 
-### Change labels, and set NA data as "unknow"
+### Change labels, and set NA data as "unknown"
 ### gender, race, age
 all_data <- all_data %>% 
   mutate(suspect_sex = case_when(suspect_sex=="F" ~ "female", 
@@ -151,8 +154,11 @@ all_data <- all_data %>%
 
 ## Due with Unknown data
 ### Choose data which have less than 5 unknown
-all_data_5un <- all_data[rowSums(all_data[, 5:23] == "unknown") <= 5, ]
-nrow(all_data) - nrow(all_data_5un) # 516691
+all_data_5un <- all_data %>%
+  mutate(unknown_num = rowSums(all_data[, 5:23] == "unknown")) %>%
+  filter(unknown_num <=5)
+
+nrow(all_data) - nrow(all_data_5un) # 532818
 
 ## Split data to lon_lat_data and complaint_data
 lon_lat_data <- all_data_5un[, c("lot", "lat")]
