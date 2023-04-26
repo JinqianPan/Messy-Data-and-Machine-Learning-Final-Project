@@ -1,4 +1,5 @@
 # Final Project
+## Cleaning data
 
 # Load package
 library(dplyr)
@@ -9,7 +10,6 @@ library(ggplot2)
 ### set the seed to 1234
 set.seed(1234)
 
-# Data cleaning
 ### read data
 all_data <- read.csv("./data/NYPD_Complaint_Data_Historic.csv")
 
@@ -48,7 +48,6 @@ all_data <- all_data %>%
          victim_race =  VIC_RACE,
          victim_sex =  VIC_SEX)
 
-### We start from time
 ### How many NA in the time
 length(which(all_data$occurrence_start_date == "")) # 655
 length(which(all_data$occurrence_start_time == "")) # 48
@@ -72,6 +71,7 @@ all_data <- all_data %>%
 
 ### How many NA in the occurrence precinct
 length(which(is.na(tmp1$occurrence_precinct)))
+
 ### Remove the NA of occurrence_precinct
 all_data <- all_data %>%
   filter(!is.na(occurrence_precinct))
@@ -93,11 +93,14 @@ all_data <- all_data %>%
          occurrence_year = year(occurrence_start_time)) %>%
   select(-occurrence_start_date, -occurrence_finish_date)
 
+### official website shows data start from 2006
 table(all_data$occurrence_year)
+### filter the year from 2006
 all_data <- all_data %>%
   filter(occurrence_year >= 2006)
-###
-# gender, race, age
+
+### Change labels, and set NA data as "unknow"
+### gender, race, age
 all_data <- all_data %>% 
   mutate(suspect_sex = case_when(suspect_sex=="F" ~ "female", 
                                  suspect_sex=="M" ~ "male",
@@ -120,8 +123,8 @@ all_data <- all_data %>%
          suspect_age = ifelse(suspect_age == "", "unknown", suspect_age),
          victim_age = ifelse(victim_age == "", "unknown", victim_age))
 
-# offense_desc, pd_desc, completed_or_attempted, 
-# offense_level, borough_name, premises
+### offense_desc, pd_desc, completed_or_attempted, 
+### offense_level, borough_name, premises
 all_data <- all_data %>% 
   mutate(offense_level = tolower(offense_level),
          offense_desc = tolower(offense_desc),
@@ -146,12 +149,12 @@ all_data <- all_data %>%
                                  "unknown", 
                                  patrol_borough),)
 
-##### Unknown
+## Due with Unknown data
+### Choose data which have less than 5 unknown
 all_data_5un <- all_data[rowSums(all_data[, 5:23] == "unknown") <= 5, ]
 nrow(all_data) - nrow(all_data_5un) # 516691
 
-colnames(all_data_5un)
-## Split data
+## Split data to lon_lat_data and complaint_data
 lon_lat_data <- all_data_5un[, c("lot", "lat")]
 
 columns <- c("occurrence_year", "occurrence_start_time", 
@@ -166,14 +169,4 @@ complaint_data <- all_data_5un[, columns]
 
 
 ### Save to Rdata
-save(complaint_data, lon_lat_data, file="final.RData")
-
-
-
-
-
-
-
-
-
-
+save(complaint_data, lon_lat_data, file="./data/cleaned_data.RData")
