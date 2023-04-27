@@ -126,6 +126,31 @@ all_data <- all_data %>%
          suspect_age = ifelse(suspect_age == "", "unknown", suspect_age),
          victim_age = ifelse(victim_age == "", "unknown", victim_age))
 
+### There is a high probability that the victim_sex of E and D is unknown.
+### If victim_age and victim_race are unknown, set victim_sex unknown.
+rownum = which(all_data$victim_sex == "gender free")
+all_data[rownum, c("victim_age", "victim_race", "victim_sex")]
+
+table(all_data[rownum, "victim_age"])
+table(all_data[rownum, "victim_race"])
+
+rownum = which(all_data$victim_sex == "diverse")
+all_data[rownum, c("victim_age", "victim_race", "victim_sex")]
+
+table(all_data[rownum, "victim_age"])
+table(all_data[rownum, "victim_race"])
+
+rownum = which(all_data$suspect_sex == "gender free")
+all_data[rownum, c("suspect_age", "suspect_race", "suspect_sex")]
+
+rownum = which(all_data$suspect_sex == "diverse")
+all_data[rownum, c("suspect_age", "suspect_race", "suspect_sex")]
+
+all_data <- all_data %>% 
+  mutate(victim_sex = ifelse(victim_age=="unknown" & victim_race=="unknown", 
+                             "unknown",
+                             victim_sex))
+
 ### offense_desc, pd_desc, completed_or_attempted, 
 ### offense_level, borough_name, premises
 all_data <- all_data %>% 
@@ -158,7 +183,7 @@ all_data_5un <- all_data %>%
   mutate(unknown_num = rowSums(all_data[, 5:23] == "unknown")) %>%
   filter(unknown_num <=5)
 
-nrow(all_data) - nrow(all_data_5un) # 532818
+nrow(all_data) - nrow(all_data_5un) # 1629976
 
 ## Split data to lon_lat_data and complaint_data
 lon_lat_data <- all_data_5un[, c("lot", "lat")]
