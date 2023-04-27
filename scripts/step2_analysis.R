@@ -4,6 +4,7 @@
 library(dplyr)
 library(lubridate)
 library(ggplot2)
+library(Rmisc)
 
 ## Load cleaned data
 load("./data/cleaned_data.Rdata")
@@ -14,14 +15,14 @@ occurrence_time <- complaint_data %>%
   mutate(occurrence_hour = hour(occurrence_start_time),
          occurrence_month = month(occurrence_start_time)) %>%
   select(occurrence_year, occurrence_month, occurrence_hour) %>%
-  rename(year = occurrence_year,
-         month = occurrence_month, 
-         hour = occurrence_hour)
+  dplyr::rename(year = occurrence_year,
+                month = occurrence_month, 
+                hour = occurrence_hour)
 
 ##### 2006-2019 24 hours vs Complaint Number
 occurrence_year_hour <- occurrence_time %>%
   group_by(year, hour) %>%
-  summarise(n = n())
+  dplyr::summarise(n = n())
   
 p1 <- ggplot(occurrence_year_hour, aes(x=hour, y=n)) +
   geom_line() +
@@ -37,7 +38,7 @@ p1
 ##### 2006-2019 12 months vs Complaint Number
 occurrence_year_month <- occurrence_time %>%
   group_by(year, month) %>%
-  summarise(n = n())
+  dplyr::summarise(n = n())
 
 p2 <- ggplot(occurrence_year_month, aes(x=month, y=n)) +
   geom_line() +
@@ -56,7 +57,7 @@ borough_name_hour_level <- complaint_data %>%
   select(occurrence_hour, borough_name, offense_level) %>%
   filter(borough_name != "unknown") %>%
   group_by(borough_name, offense_level, occurrence_hour) %>%
-  summarize(count = n())
+  dplyr::summarize(count = n())
 
 p3 <- ggplot(borough_name_hour_level, aes(x=occurrence_hour, 
                                           y=count, 
