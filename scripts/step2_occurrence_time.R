@@ -3,7 +3,6 @@
 # Load package
 library(dplyr)
 library(lubridate)
-library(ROCR)
 library(ggplot2)
 
 ## Load cleaned data
