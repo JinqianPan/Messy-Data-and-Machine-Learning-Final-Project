@@ -18,7 +18,7 @@ occurrence_time <- complaint_data %>%
          month = occurrence_month, 
          hour = occurrence_hour)
 
-#####
+##### 2006-2019 24 hours vs Complaint Number
 occurrence_year_hour <- occurrence_time %>%
   group_by(year, hour) %>%
   summarise(n = n())
@@ -34,7 +34,7 @@ p1
 #        width=15,
 #        height=10)
 
-#####
+##### 2006-2019 12 months vs Complaint Number
 occurrence_year_month <- occurrence_time %>%
   group_by(year, month) %>%
   summarise(n = n())
@@ -50,7 +50,7 @@ p2
 #        width=15,
 #        height=10)
 
-#####
+##### Offense level vs borough_name/ 24 hour
 borough_name_hour_level <- complaint_data %>%
   mutate(occurrence_hour = hour(occurrence_start_time)) %>%
   select(occurrence_hour, borough_name, offense_level) %>%
@@ -72,5 +72,53 @@ p3
 #        width=7,
 #        height=7)
 
+###### Graph for offense level and race
+table(complaint_data$offense_level)
 
+rownum <- which(complaint_data$offense_level == "violation")
+table(complaint_data$suspect_race[rownum])
+
+rownum <- which(complaint_data$offense_level == "misdemeanor")
+table(complaint_data$suspect_race[rownum])
+
+rownum <- which(complaint_data$offense_level == "felony")
+table(complaint_data$suspect_race[rownum])
+
+offense_level_race <- complaint_data %>%
+  filter(suspect_race != "other", 
+         suspect_race != "american indian/alaskan native",
+         suspect_race != "unknown") %>%
+  select(offense_level, suspect_race) %>%
+  group_by(offense_level, suspect_race) %>%
+  dplyr::summarise(n = n())
+
+differernt_race <- complaint_data %>%
+  filter(suspect_race != "unknown",
+         victim_race != "unknown") %>%
+  mutate(drace = 
+           ifelse(suspect_race == victim_race, "same race", "diff race")) %>%
+  select(offense_level, drace) %>%
+  group_by(offense_level, drace) %>%
+  dplyr::summarise(n = n())
+
+p1 <- ggplot(offense_level_race, aes(x=suspect_race, y=n, fill=offense_level)) + 
+  geom_bar(position="stack", stat="identity") +
+  ylab("The Number of Offense") + 
+  xlab("Suspect Race") +
+  guides(fill=FALSE)
+
+p2 <- ggplot(offense_level_race, aes(x=suspect_race, y=n, fill=offense_level)) + 
+  geom_bar(position="fill", stat="identity") +
+  ylab("The Probability of Offense") +
+  xlab("Suspect Race") +
+  guides(fill=FALSE)
+
+p3 <- ggplot(differernt_race, aes(x=drace, y=n, fill=offense_level)) + 
+  geom_bar(position="stack", stat="identity") +
+  ylab("The Number of Offense") +
+  xlab("Whether Suspect And Victim Same Race")
+
+# png(file='./figures/offense_level_race.png', width=1500, height=500, res=100)
+multiplot(p1, p2, p3, cols=3)
+# dev.off()
 
