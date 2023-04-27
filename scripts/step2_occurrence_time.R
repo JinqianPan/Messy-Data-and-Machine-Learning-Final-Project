@@ -49,3 +49,28 @@ p2
 #        filename='./figures/complaint_over_month.png',
 #        width=15,
 #        height=10)
+
+#####
+borough_name_hour_level <- complaint_data %>%
+  mutate(occurrence_hour = hour(occurrence_start_time)) %>%
+  select(occurrence_hour, borough_name, offense_level) %>%
+  filter(borough_name != "unknown") %>%
+  group_by(borough_name, offense_level, occurrence_hour) %>%
+  summarize(count = n())
+
+p3 <- ggplot(borough_name_hour_level, aes(x=occurrence_hour, 
+                                          y=count, 
+                                          colour=offense_level)) +
+  geom_line() +
+  facet_wrap(~borough_name) +
+  labs(y="Number of Complaint", x="Hour") +
+  theme(legend.position = c(0.85, 0.25))
+p3
+
+# ggsave(p3,
+#        filename='./figures/borough_name_hour_level.png',
+#        width=7,
+#        height=7)
+
+
+
