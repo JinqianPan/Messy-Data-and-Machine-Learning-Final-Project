@@ -123,8 +123,20 @@ all_data <- all_data %>%
          victim_age = tolower(victim_age),
          suspect_race = ifelse(suspect_race == "", "unknown", suspect_race),
          victim_race = ifelse(victim_race == "", "unknown", victim_race),
-         suspect_age = ifelse(suspect_age == "", "unknown", suspect_age),
-         victim_age = ifelse(victim_age == "", "unknown", victim_age))
+         # suspect_age = ifelse(suspect_age == "", "unknown", suspect_age),
+         suspect_age = ifelse(suspect_age == "<18" |
+                                suspect_age == "18-24" |
+                                suspect_age == "25-44" |
+                                suspect_age == "45-64" |
+                                suspect_age == "65+",
+                              suspect_age, "unknown"),
+         # victim_age = ifelse(victim_age == "", "unknown", victim_age)
+         victim_age = ifelse(victim_age == "<18" |
+                               victim_age == "18-24" |
+                               victim_age == "25-44" |
+                               victim_age == "45-64" |
+                               victim_age == "65+",
+                             victim_age, "unknown"))
 
 ### There is a high probability that the victim_sex of E and D is unknown.
 ### If victim_age and victim_race are unknown, set victim_sex unknown.

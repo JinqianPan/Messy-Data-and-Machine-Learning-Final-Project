@@ -32,8 +32,8 @@ p1
 
 # ggsave(p1,
 #        filename='./figures/complaint_over_hour.png',
-#        width=15,
-#        height=10)
+#        width=10,
+#        height=5)
 
 ##### 2006-2019 12 months vs Complaint Number
 occurrence_year_month <- occurrence_time %>%
@@ -45,11 +45,11 @@ p2 <- ggplot(occurrence_year_month, aes(x=month, y=n)) +
   facet_wrap(~year) + 
   labs(y="Number of Complaint", x="Month")
 p2
-
+# 
 # ggsave(p2,
 #        filename='./figures/complaint_over_month.png',
-#        width=15,
-#        height=10)
+#        width=10,
+#        height=5)
 
 ##### Offense level vs borough_name/ 24 hour
 borough_name_hour_level <- complaint_data %>%
@@ -70,8 +70,8 @@ p3
 
 # ggsave(p3,
 #        filename='./figures/borough_name_hour_level.png',
-#        width=7,
-#        height=7)
+#        width=10,
+#        height=5)
 
 ###### Graph for offense level and race
 table(complaint_data$offense_level)
@@ -102,24 +102,24 @@ differernt_race <- complaint_data %>%
   group_by(offense_level, drace) %>%
   dplyr::summarise(n = n())
 
-p1 <- ggplot(offense_level_race, aes(x=suspect_race, y=n, fill=offense_level)) + 
+p4 <- ggplot(offense_level_race, aes(x=suspect_race, y=n, fill=offense_level)) + 
   geom_bar(position="stack", stat="identity") +
   ylab("The Number of Offense") + 
   xlab("Suspect Race") +
   guides(fill=FALSE)
 
-p2 <- ggplot(offense_level_race, aes(x=suspect_race, y=n, fill=offense_level)) + 
+p5 <- ggplot(offense_level_race, aes(x=suspect_race, y=n, fill=offense_level)) + 
   geom_bar(position="fill", stat="identity") +
   ylab("The Probability of Offense") +
   xlab("Suspect Race") +
   guides(fill=FALSE)
 
-p3 <- ggplot(differernt_race, aes(x=drace, y=n, fill=offense_level)) + 
+p6 <- ggplot(differernt_race, aes(x=drace, y=n, fill=offense_level)) + 
   geom_bar(position="stack", stat="identity") +
   ylab("The Number of Offense") +
   xlab("Whether Suspect And Victim Same Race")
 
 # png(file='./figures/offense_level_race.png', width=1500, height=500, res=100)
-multiplot(p1, p2, p3, cols=3)
+multiplot(p4, p5, p6, cols=3)
 # dev.off()
 
