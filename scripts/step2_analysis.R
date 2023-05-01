@@ -27,7 +27,9 @@ occurrence_year_hour <- occurrence_time %>%
 p1 <- ggplot(occurrence_year_hour, aes(x=hour, y=n)) +
   geom_line() +
   facet_wrap(~year) +
-  labs(y="Number of Complaint", x="Hour")
+  labs(y="Number of Complaint", x="Hour") +
+  theme(text=element_text(family="serif", size=16))
+
 p1
 
 # ggsave(p1,
@@ -43,7 +45,8 @@ occurrence_year_month <- occurrence_time %>%
 p2 <- ggplot(occurrence_year_month, aes(x=month, y=n)) +
   geom_line() +
   facet_wrap(~year) + 
-  labs(y="Number of Complaint", x="Month")
+  labs(y="Number of Complaint", x="Month") +
+  theme(text=element_text(family="serif", size=16))
 p2
 # 
 # ggsave(p2,
@@ -65,7 +68,8 @@ p3 <- ggplot(borough_name_hour_level, aes(x=occurrence_hour,
   geom_line() +
   facet_wrap(~borough_name) +
   labs(y="Number of Complaint", x="Hour") +
-  theme(legend.position = c(0.85, 0.25))
+  theme(legend.position = c(0.85, 0.25)) +
+  theme(text=element_text(family="serif", size=16))
 p3
 
 # ggsave(p3,
@@ -104,20 +108,23 @@ differernt_race <- complaint_data %>%
 
 p4 <- ggplot(offense_level_race, aes(x=suspect_race, y=n, fill=offense_level)) + 
   geom_bar(position="stack", stat="identity") +
-  ylab("The Number of Offense") + 
+  ylab("The Number of Complaint") + 
   xlab("Suspect Race") +
-  guides(fill=FALSE)
+  guides(fill=FALSE) +
+  theme(text=element_text(family="serif"))
 
 p5 <- ggplot(offense_level_race, aes(x=suspect_race, y=n, fill=offense_level)) + 
   geom_bar(position="fill", stat="identity") +
-  ylab("The Probability of Offense") +
+  ylab("The Probability of Complaint") +
   xlab("Suspect Race") +
-  guides(fill=FALSE)
+  guides(fill=FALSE) +
+  theme(text=element_text(family="serif"))
 
 p6 <- ggplot(differernt_race, aes(x=drace, y=n, fill=offense_level)) + 
   geom_bar(position="stack", stat="identity") +
-  ylab("The Number of Offense") +
-  xlab("Whether Suspect And Victim Same Race")
+  ylab("The Number of Complaint") +
+  xlab("Whether Suspect And Victim Same Race") +
+  theme(text=element_text(family="serif"))
 
 # png(file='./figures/offense_level_race.png', width=1500, height=500, res=100)
 multiplot(p4, p5, p6, cols=3)
